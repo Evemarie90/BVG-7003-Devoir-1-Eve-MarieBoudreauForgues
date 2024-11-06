@@ -14,6 +14,15 @@
 
 🧮 🧮 🧮**Procédure et instructions**
 
+Avant de débuter, assurez vous d'avoir une version à jour de l'application R studio ainsi que d'avoir téléchargé les packages suivant :
+
+- ggplot2
+- knitr
+
+1. Téléchargez ou copiez le script Rmarkdown directement dans votre application Rstudio
+2. Enregistrer le jeu de données en example : 2_Data_RNASeq_Cannabis_Sex.csv et mémoriser l'emplacement où il est enregister.
+3. Copier le file path du jeu de données et importer les datas dans R 
+4. 
 
 
 
