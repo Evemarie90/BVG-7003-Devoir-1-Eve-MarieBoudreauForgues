@@ -21,8 +21,9 @@ Avant de débuter, assurez vous d'avoir une version à jour de l'application R s
 
 1. Téléchargez ou copiez le script Rmarkdown directement dans votre application Rstudio
 2. Enregistrer le jeu de données en example : 2_Data_RNASeq_Cannabis_Sex.csv et mémoriser l'emplacement où il est enregister.
-3. Copier le file path du jeu de données et importer les datas dans R 
-4. 
+3. Copier le filepath du jeu de données et importer les datas dans R 
+4. Exécuter le script en prenant bien soin de lire les sections en bleu afin de personnaliser les différences sections.
+5. Le fichier produit 3 graphiques qui montre les différents niveaux d'expression tel que mentionné à la section résultats du script. 
 
 
 
