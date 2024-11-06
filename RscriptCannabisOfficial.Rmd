@@ -1,0 +1,150 @@
+---
+title: "RNASeq Cannabis Sex Analysis"
+author: "Ève-MarieBoudreau"
+date: "2024-11-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+#Data : An example data set for this script can be found on the Github and has been generously provied by Davoud Torkamaneh lab's from Université Laval. Graph titles are redacted in french but can be modify. I needed R Graph gallery https://r-graph-gallery.com/ can be a usefull tool to adapt graph visuals. 
+
+# Load the data (Make sure the frist column of tab be X containing genes and that other column contains genes expression AND also you need to replace this file path with your personnal one if you save the example data set into your comuputer. The example dataset file is too big to be imported directly into R). 
+
+tab <- read.csv('/Users/eve-marieboudreau-forgues/Downloads/2_Data_RNASeq_Cannabis_Sex.csv')
+
+
+# Replace gene names (Here, if you wish you could modify genes names if you are working with a different dataset)
+tab$X <- gsub("LOC115699937", "REM16", tab$X)
+tab$X <- gsub("LOC115696989", "FT1", tab$X)
+
+# Filter data for REM16 
+rem16_data <- tab[tab$X == "REM16", ]
+
+# Transpose the table to get expression columns in long format 
+#This step remove gene column X and transpose
+rem16_long <- data.frame(t(rem16_data[,-1]))  
+#This step Rename expression column 
+colnames(rem16_long) <- "expression" 
+
+# Extract sample names (which contain sex in the last two characters)
+#This step add sample names
+rem16_long$sample <- rownames(rem16_long) 
+
+# Create a column to identify sex based on the last two characters of column names
+rem16_long$sex <- substr(rem16_long$sample, nchar(rem16_long$sample) - 1, nchar(rem16_long$sample))
+
+# Plot expression levels by sex (As theme is set to minimal, you can personnalize theme and add colors and legend. If you want to vizualise your graph you can copy the script for the graph in the Console and run it, it will appear in the right pannel lable 'plots' and then you can export your graph). 
+
+ggplot(rem16_long, aes(x = sex, y = expression, color = sex)) +
+  geom_boxplot() + 
+  geom_jitter(width = 0.2) + 
+  labs(title = "Niveau d'expression du gène REM16 en fonction du sexe",
+       x = "Sexe",
+       y = "Niveau d'expression") +
+  scale_color_manual(values = c("XX" = "Orange", "XY" = "Brown")) +  # Customize colors
+  theme(
+    legend.position = "none",
+    panel.background = element_rect(fill = "white"),  # Set panel background to white
+    plot.background = element_rect(fill = "white"),   # Set plot background to white
+    axis.title.x = element_text(color = "black"),     # Set X axis title color to black
+    axis.title.y = element_text(color = "black"),     # Set Y axis title color to black
+    axis.text.x = element_text(color = "black"),      # Set X axis text color to black
+    axis.text.y = element_text(color = "black"),      # Set Y axis text color to black
+    axis.line = element_line(color = "black")         # Set axis lines to black
+  )
+
+
+# Filter data for FT1
+ft1_data <- tab[tab$X == "FT1", ]
+
+# Transpose the table to get expression columns in long format
+# This step remove gene column X and transpose
+ft1_long <- data.frame(t(ft1_data[,-1]))  
+#This step rename expression column
+colnames(ft1_long) <- "expression"
+
+# Extract sample names (which contain sex in the last two characters)
+#This step add sample names
+ft1_long$sample <- rownames(ft1_long) 
+
+# Create a column to identify sex based on the last two characters of column names
+ft1_long$sex <- substr(ft1_long$sample, nchar(ft1_long$sample) - 1, nchar(ft1_long$sample))
+
+# Plot expression levels by sex
+ggplot(ft1_long, aes(x = sex, y = expression, color = sex)) +
+  geom_boxplot() + 
+  geom_jitter(width = 0.2) + 
+  labs(title = "Niveau d'expression du gène FT1 en fonction du sexe",
+       x = "Sexe",
+       y = "Niveau d'expression") +
+  scale_color_manual(values = c("XX" = "orange", "XY" = "brown")) +  # Customize colors
+  theme(
+    legend.position = "none",
+    panel.background = element_rect(fill = "white"),  # Set panel background to white
+    plot.background = element_rect(fill = "white"),   # Set plot background to white
+    axis.title.x = element_text(color = "black"),     # Set X axis title color to black
+    axis.title.y = element_text(color = "black"),     # Set Y axis title color to black
+    axis.text.x = element_text(color = "black"),      # Set X axis text color to black
+    axis.text.y = element_text(color = "black"),      # Set Y axis text color to black
+    axis.line = element_line(color = "black")         # Set axis lines to black
+  )
+
+# Filter data for REM16 and FT1
+rem16_data <- tab[tab$X == "REM16", ]
+ft1_data <- tab[tab$X == "FT1", ]
+
+# Transpose and create long tables for REM16 and FT1
+rem16_long <- data.frame(t(rem16_data[,-1]))
+colnames(rem16_long) <- "expression"
+rem16_long$sample <- rownames(rem16_long)
+rem16_long$sex <- substr(rem16_long$sample, nchar(rem16_long$sample) - 1, nchar(rem16_long$sample))
+rem16_long$gene <- "REM16"  # Add a column to identify the gene
+
+ft1_long <- data.frame(t(ft1_data[,-1]))
+colnames(ft1_long) <- "expression"
+ft1_long$sample <- rownames(ft1_long)
+ft1_long$sex <- substr(ft1_long$sample, nchar(ft1_long$sample) - 1, nchar(ft1_long$sample))
+ft1_long$gene <- "FT1"  # Add a column to identify the gene
+
+# Merge the two tables
+combined_data <- rbind(rem16_long, ft1_long)
+
+# Create a plot with ggplot2 distinguishing the genes
+library(ggplot2)
+ggplot(combined_data, aes(x = sex, y = expression, color = gene)) +
+  geom_boxplot(outlier.shape = NA) +  # Hide outliers in boxplot
+  geom_jitter(width = 0.2, alpha = 0.6, size = 2, shape = 16) +  # Customize jitter points
+  stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +  # Add mean points
+  labs(title = "Expression Levels of REM16 and FT1 Genes by Sex",
+       subtitle = "Comparing gene expression between male and female samples",
+       x = "Sex",
+       y = "Expression Level",
+       color = "Gene") +  # Add a legend for the genes
+  scale_color_manual(values = c("REM16" = "orange", "FT1" = "cyan")) +  # Customize colors
+  theme_minimal() +
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set panel background to white
+    plot.background = element_rect(fill = "white"),   # Set plot background to white
+    axis.title.x = element_text(color = "black"),     # Set X axis title color to black
+    axis.title.y = element_text(color = "black"),     # Set Y axis title color to black
+    axis.text.x = element_text(color = "black"),      # Set X axis text color to black
+    axis.text.y = element_text(color = "black"),      # Set Y axis text color to black
+    axis.line = element_line(color = "black")         # Set axis lines to black
+  )
+
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
