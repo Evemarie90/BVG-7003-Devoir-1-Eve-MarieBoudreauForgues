@@ -38,11 +38,12 @@ rem16_long$sample <- rownames(rem16_long)
 # Create a column to identify sex based on the last two characters of column names
 rem16_long$sex <- substr(rem16_long$sample, nchar(rem16_long$sample) - 1, nchar(rem16_long$sample))
 
-# Plot expression levels by sex (As theme is set to minimal, you can personnalize theme and add colors and legend. If you want to vizualise your graph you can copy the script for the graph in the Console and run it, it will appear in the right pannel lable 'plots' and then you can export your graph). 
-
+# Plot expression levels by sex (As theme is set to minimal, you can personnalize theme and add colors and legend. If you want to vizualise your graph you can copy the script for the graph in the Console and run it, it will appear in the right pannel label 'plots' and then you can export your graph). 
+library(ggplot2)
 ggplot(rem16_long, aes(x = sex, y = expression, color = sex)) +
-  geom_boxplot() + 
-  geom_jitter(width = 0.2) + 
+geom_boxplot(outlier.shape = NA) +  # Hide outliers in boxplot
+  geom_jitter(width = 0.2, alpha = 0.6, size = 2, shape = 16) +  # Customize jitter points
+  stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +  
   labs(title = "Niveau d'expression du gène REM16 en fonction du sexe",
        x = "Sexe",
        y = "Niveau d'expression") +
@@ -77,8 +78,9 @@ ft1_long$sex <- substr(ft1_long$sample, nchar(ft1_long$sample) - 1, nchar(ft1_lo
 
 # Plot expression levels by sex
 ggplot(ft1_long, aes(x = sex, y = expression, color = sex)) +
-  geom_boxplot() + 
-  geom_jitter(width = 0.2) + 
+  geom_boxplot(outlier.shape = NA) +  # Hide outliers in boxplot
+  geom_jitter(width = 0.2, alpha = 0.6, size = 2, shape = 16) +  # Customize jitter points
+  stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +   
   labs(title = "Niveau d'expression du gène FT1 en fonction du sexe",
        x = "Sexe",
        y = "Niveau d'expression") +
@@ -137,11 +139,31 @@ ggplot(combined_data, aes(x = sex, y = expression, color = gene)) +
     axis.line = element_line(color = "black")         # Set axis lines to black
   )
 
+#Here is another way you could graph your datas. This plot are called violin plot and are broadcasted and explained here : https://r-graph-gallery.com/web-violinplot-with-ggstatsplot.html 
+
+ggplot(ft1_long, aes(x = sex, y = expression, fill = sex)) +
+  geom_violin(trim = FALSE, alpha = 0.6) +  # Add violin plot
+  geom_boxplot(width = 0.1, outlier.shape = NA) +  # Add boxplot inside violin plot
+  geom_jitter(width = 0.2, alpha = 0.4, size = 1.5) +  # Add jitter points
+  labs(title = "Distribution of FT1 Gene Expression by Sex",
+       x = "Sex",
+       y = "Expression Level") +
+  scale_fill_manual(values = c("XX" = "green", "XY" = "purple")) +  # Customize fill colors
+  theme_minimal() +
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set panel background to white
+    plot.background = element_rect(fill = "white"),   # Set plot background to white
+    axis.title.x = element_text(color = "black"),     # Set X axis title color to black
+    axis.title.y = element_text(color = "black"),     # Set Y axis title color to black
+    axis.text.x = element_text(color = "black"),      # Set X axis text color to black
+    axis.text.y = element_text(color = "black"),      # Set Y axis text color to black
+    axis.line = element_line(color = "black")         # Set axis lines to black
+  )
 
 
 ## Including Plots
 
-You can also embed plots, for example:
+
 
 ```{r pressure, echo=FALSE}
 plot(pressure)
